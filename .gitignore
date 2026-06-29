@@ -162,3 +162,5 @@ cython_debug/
 #.idea/
 
 artifact/
+#mongoDB_credentials
+mongoDB_cred.py

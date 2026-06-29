@@ -129,7 +129,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-.vscode
+C:\Users\ASUS\Desktop\MLOPS\Vehicle-Insurance\.vscode
 
 # Spyder project settings
 .spyderproject

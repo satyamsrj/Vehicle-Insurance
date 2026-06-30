@@ -17,6 +17,7 @@ class DataIngestion:
         """
         try:
             self.data_ingestion_config = data_ingestion_config
+            
         except Exception as e:
             raise MyException(e, sys)
 

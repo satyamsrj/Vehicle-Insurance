@@ -1,46 +1,60 @@
+from typing import Optional
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from starlette.responses import HTMLResponse, RedirectResponse
+from starlette.responses import HTMLResponse
 from uvicorn import run as app_run
 
-from typing import Optional
-
-# Importing constants and pipeline modules from the project
 from src.constants import APP_HOST, APP_PORT
-from src.pipline.prediction_pipeline import VehicleData, VehicleDataClassifier
+from src.pipline.prediction_pipeline import (
+    VehicleData,
+    VehicleDataClassifier,
+)
 from src.pipline.training_pipeline import TrainPipeline
 
-# Initialize FastAPI application
-app = FastAPI()
+# -----------------------------------------------------------------------------
+# FastAPI App
+# -----------------------------------------------------------------------------
 
-# Mount the 'static' directory for serving static files (like CSS)
+app = FastAPI(title="Vehicle Insurance Prediction")
+
+# Static Files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Set up Jinja2 template engine for rendering HTML templates
-templates = Jinja2Templates(directory='templates')
+# Templates
+from pathlib import Path
 
-# Allow all origins for Cross-Origin Resource Sharing (CORS)
-origins = ["*"]
+BASE_DIR = Path(__file__).resolve().parent
 
-# Configure middleware to handle CORS, allowing requests from any origin
+print("BASE_DIR:", BASE_DIR)
+print("Templates path:", BASE_DIR / "templates")
+print("Template exists:", (BASE_DIR / "templates" / "vehicledata.html").exists())
+
+templates = Jinja2Templates(
+    directory=str(BASE_DIR / "templates")
+)
+
+# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+
+# -----------------------------------------------------------------------------
+# Form Data Class
+# -----------------------------------------------------------------------------
+
 class DataForm:
-    """
-    DataForm class to handle and process incoming form data.
-    This class defines the vehicle-related attributes expected from the form.
-    """
     def __init__(self, request: Request):
-        self.request: Request = request
+        self.request = request
+
         self.Gender: Optional[int] = None
         self.Age: Optional[int] = None
         self.Driving_License: Optional[int] = None
@@ -52,14 +66,11 @@ class DataForm:
         self.Vehicle_Age_lt_1_Year: Optional[int] = None
         self.Vehicle_Age_gt_2_Years: Optional[int] = None
         self.Vehicle_Damage_Yes: Optional[int] = None
-                
 
     async def get_vehicle_data(self):
-        """
-        Method to retrieve and assign form data to class attributes.
-        This method is asynchronous to handle form data fetching without blocking.
-        """
+
         form = await self.request.form()
+
         self.Gender = form.get("Gender")
         self.Age = form.get("Age")
         self.Driving_License = form.get("Driving_License")
@@ -72,74 +83,105 @@ class DataForm:
         self.Vehicle_Age_gt_2_Years = form.get("Vehicle_Age_gt_2_Years")
         self.Vehicle_Damage_Yes = form.get("Vehicle_Damage_Yes")
 
-# Route to render the main page with the form
-@app.get("/", tags=["authentication"])
-async def index(request: Request):
-    """
-    Renders the main HTML form page for vehicle data input.
-    """
-    return templates.TemplateResponse(
-            "vehicledata.html",{"request": request, "context": "Rendering"})
 
-# Route to trigger the model training process
+# -----------------------------------------------------------------------------
+# Home Page
+# -----------------------------------------------------------------------------
+
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+
+    return templates.TemplateResponse(
+        request=request,
+        name="vehicledata.html",
+        context={
+            "context": "Rendering"
+        },
+    )
+
+
+# -----------------------------------------------------------------------------
+# Train Model
+# -----------------------------------------------------------------------------
+
 @app.get("/train")
-async def trainRouteClient():
-    """
-    Endpoint to initiate the model training pipeline.
-    """
+async def train():
+
     try:
-        train_pipeline = TrainPipeline()
-        train_pipeline.run_pipeline()
-        return Response("Training successful!!!")
+        pipeline = TrainPipeline()
+        pipeline.run_pipeline()
+
+        return Response("Training completed successfully!")
 
     except Exception as e:
-        return Response(f"Error Occurred! {e}")
+        return Response(str(e), status_code=500)
 
-# Route to handle form submission and make predictions
-@app.post("/")
-async def predictRouteClient(request: Request):
-    """
-    Endpoint to receive form data, process it, and make a prediction.
-    """
+
+# -----------------------------------------------------------------------------
+# Prediction
+# -----------------------------------------------------------------------------
+
+@app.post("/", response_class=HTMLResponse)
+async def predict(request: Request):
+
     try:
+
         form = DataForm(request)
         await form.get_vehicle_data()
-        
+
         vehicle_data = VehicleData(
-                                Gender= form.Gender,
-                                Age = form.Age,
-                                Driving_License = form.Driving_License,
-                                Region_Code = form.Region_Code,
-                                Previously_Insured = form.Previously_Insured,
-                                Annual_Premium = form.Annual_Premium,
-                                Policy_Sales_Channel = form.Policy_Sales_Channel,
-                                Vintage = form.Vintage,
-                                Vehicle_Age_lt_1_Year = form.Vehicle_Age_lt_1_Year,
-                                Vehicle_Age_gt_2_Years = form.Vehicle_Age_gt_2_Years,
-                                Vehicle_Damage_Yes = form.Vehicle_Damage_Yes
-                                )
-
-        # Convert form data into a DataFrame for the model
-        vehicle_df = vehicle_data.get_vehicle_input_data_frame()
-
-        # Initialize the prediction pipeline
-        model_predictor = VehicleDataClassifier()
-
-        # Make a prediction and retrieve the result
-        value = model_predictor.predict(dataframe=vehicle_df)[0]
-
-        # Interpret the prediction result as 'Response-Yes' or 'Response-No'
-        status = "Response-Yes" if value == 1 else "Response-No"
-
-        # Render the same HTML page with the prediction result
-        return templates.TemplateResponse(
-            "vehicledata.html",
-            {"request": request, "context": status},
+            Gender=form.Gender,
+            Age=form.Age,
+            Driving_License=form.Driving_License,
+            Region_Code=form.Region_Code,
+            Previously_Insured=form.Previously_Insured,
+            Annual_Premium=form.Annual_Premium,
+            Policy_Sales_Channel=form.Policy_Sales_Channel,
+            Vintage=form.Vintage,
+            Vehicle_Age_lt_1_Year=form.Vehicle_Age_lt_1_Year,
+            Vehicle_Age_gt_2_Years=form.Vehicle_Age_gt_2_Years,
+            Vehicle_Damage_Yes=form.Vehicle_Damage_Yes,
         )
-        
-    except Exception as e:
-        return {"status": False, "error": f"{e}"}
 
-# Main entry point to start the FastAPI server
+        df = vehicle_data.get_vehicle_input_data_frame()
+
+        predictor = VehicleDataClassifier()
+
+        prediction = predictor.predict(df)[0]
+
+        status = (
+            "Response-Yes"
+            if prediction == 1
+            else "Response-No"
+        )
+
+        return templates.TemplateResponse(
+            request=request,
+            name="vehicledata.html",
+            context={
+                "context": status,
+            },
+        )
+
+    except Exception as e:
+
+        return templates.TemplateResponse(
+            request=request,
+            name="vehicledata.html",
+            context={
+                "context": f"Error: {e}",
+            },
+            status_code=500,
+        )
+
+
+# -----------------------------------------------------------------------------
+# Run
+# -----------------------------------------------------------------------------
+
 if __name__ == "__main__":
-    app_run(app, host=APP_HOST, port=APP_PORT)
+    app_run(
+        app,
+        host=APP_HOST,
+        port=APP_PORT,
+    )

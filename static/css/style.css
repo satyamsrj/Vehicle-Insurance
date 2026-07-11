@@ -1,0 +1,98 @@
+/* ===========================
+   Vehicle Insurance Predictor
+=========================== */
+
+body {
+    background: #eef2f7;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 900px;
+}
+
+.card {
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+h2 {
+    font-weight: 700;
+    color: #0d6efd;
+}
+
+label {
+    font-weight: 600;
+    color: #444;
+}
+
+.form-control,
+.form-select {
+    border-radius: 10px;
+    padding: 10px;
+    transition: 0.3s;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 8px rgba(13, 110, 253, 0.25);
+}
+
+.btn {
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 12px;
+}
+
+.btn-primary {
+    background: #0d6efd;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: #0b5ed7;
+}
+
+.btn-success {
+    border: none;
+}
+
+.btn-success:hover {
+    background: #157347;
+}
+
+.alert {
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.result-success {
+    color: #198754;
+}
+
+.result-failure {
+    color: #dc3545;
+}
+
+hr {
+    margin: 30px 0;
+}
+
+@media (max-width: 768px) {
+
+    .card {
+        padding: 20px !important;
+    }
+
+    h2 {
+        font-size: 28px;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}

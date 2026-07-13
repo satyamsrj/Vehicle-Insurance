@@ -1,12 +1,11 @@
 from typing import Optional
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.responses import HTMLResponse
 from uvicorn import run as app_run
-from pathlib import Path
 
 from src.constants import APP_HOST, APP_PORT
 from src.pipline.prediction_pipeline import (
@@ -17,14 +16,24 @@ from src.pipline.prediction_pipeline import (
 # -----------------------------------------------------------------------------
 # FastAPI App
 # -----------------------------------------------------------------------------
+
 app = FastAPI(title="Vehicle Insurance Prediction")
 
 # Static Files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Templates
+from pathlib import Path
+
 BASE_DIR = Path(__file__).resolve().parent
-templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+
+print("BASE_DIR:", BASE_DIR)
+print("Templates path:", BASE_DIR / "templates")
+print("Template exists:", (BASE_DIR / "templates" / "vehicledata.html").exists())
+
+templates = Jinja2Templates(
+    directory=str(BASE_DIR / "templates")
+)
 
 # CORS
 app.add_middleware(
@@ -38,9 +47,11 @@ app.add_middleware(
 # -----------------------------------------------------------------------------
 # Form Data Class
 # -----------------------------------------------------------------------------
+
 class DataForm:
     def __init__(self, request: Request):
         self.request = request
+
         self.Gender: Optional[int] = None
         self.Age: Optional[int] = None
         self.Driving_License: Optional[int] = None
@@ -54,7 +65,9 @@ class DataForm:
         self.Vehicle_Damage_Yes: Optional[int] = None
 
     async def get_vehicle_data(self):
+
         form = await self.request.form()
+
         self.Gender = form.get("Gender")
         self.Age = form.get("Age")
         self.Driving_License = form.get("Driving_License")
@@ -67,23 +80,32 @@ class DataForm:
         self.Vehicle_Age_gt_2_Years = form.get("Vehicle_Age_gt_2_Years")
         self.Vehicle_Damage_Yes = form.get("Vehicle_Damage_Yes")
 
+
 # -----------------------------------------------------------------------------
 # Home Page
 # -----------------------------------------------------------------------------
+
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
+
     return templates.TemplateResponse(
         request=request,
         name="vehicledata.html",
-        context={"context": None},
+        context={
+            "context": ""
+        },
     )
+
 
 # -----------------------------------------------------------------------------
 # Prediction
 # -----------------------------------------------------------------------------
+
 @app.post("/", response_class=HTMLResponse)
 async def predict(request: Request):
+
     try:
+
         form = DataForm(request)
         await form.get_vehicle_data()
 
@@ -102,34 +124,44 @@ async def predict(request: Request):
         )
 
         df = vehicle_data.get_vehicle_input_data_frame()
+
         predictor = VehicleDataClassifier()
+
         prediction = predictor.predict(df)[0]
 
-        status = "Response-Yes" if prediction == 1 else "Response-No"
+        status = (
+            "Response - Yes"
+            if prediction == 1
+            else "Response - No"
+        )
 
         return templates.TemplateResponse(
             request=request,
             name="vehicledata.html",
-            context={"context": status},
+            context={
+                "context": status,
+            },
         )
 
     except Exception as e:
+
         return templates.TemplateResponse(
             request=request,
             name="vehicledata.html",
-            context={"context": f"Error: {e}"},
+            context={
+                "context": f"Error: {e}",
+            },
             status_code=500,
         )
 
-# -----------------------------------------------------------------------------
-# Health Check
-# -----------------------------------------------------------------------------
-@app.get("/health")
-async def health():
-    return {"status": "ok"}
 
 # -----------------------------------------------------------------------------
 # Run
 # -----------------------------------------------------------------------------
+
 if __name__ == "__main__":
-    app_run(app, host=APP_HOST, port=APP_PORT)
+    app_run(
+        app,
+        host=APP_HOST,
+        port=APP_PORT,
+    )

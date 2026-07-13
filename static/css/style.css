@@ -1,102 +1,189 @@
-/* ===========================
-   Vehicle Insurance Predictor
-=========================== */
+/* ==========================================================================
+   Vehicle Insurance Predictor - Premium Modern Theme
+   ========================================================================== */
 
+:root {
+  --bg-app: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --color-brand: #0d6efd;
+  --color-brand-hover: #0b5ed7;
+  
+  /* Status Colors */
+  --color-success: #198754;
+  --color-success-bg: #e8f5e9;
+  --color-danger: #dc3545;
+  --color-danger-bg: #ffebee;
+  --color-warning: #ffc107;
+  --color-warning-bg: #fffde7;
+
+  /* Typography Colors */
+  --text-main: #2b303a;
+  --text-muted: #6c757d;
+  --text-label: #495057;
+
+  /* Global Properties */
+  --radius-card: 20px;
+  --radius-input: 12px;
+  --shadow-card: 0 20px 40px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-input-focus: 0 0 0 4px rgba(13, 110, 253, 0.15);
+  --transition-base: all 0.2s ease-in-out;
+}
+
+/* Base resets & layout structure */
 body {
-    background: #eef2f7;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    min-height: 100vh;
+  background: var(--bg-app);
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  color: var(--text-main);
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  align-items: center;
 }
 
 .container {
-    max-width: 900px;
+  max-width: 850px;
+  width: 100%;
 }
 
+/* Card Container Styling */
 .card {
-    border: none;
-    border-radius: 18px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-    padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  transition: var(--transition-base);
 }
 
+/* Typography styles */
+/* Typography styles */
 h2 {
-    font-weight: 700;
-    color: #0d6efd;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(45deg, var(--color-brand), #0046b8);
+  -webkit-background-clip: text; /* Vendor prefix for Apple/Blink/Webkit browsers */
+  background-clip: text;         /* Standard property for compatibility */
+  -webkit-text-fill-color: transparent;
 }
 
 label {
-    font-weight: 600;
-    color: #444;
+  font-weight: 600;
+  font-size: 0.925rem;
+  color: var(--text-label);
+  margin-bottom: 0.4rem;
 }
 
+/* Form controls and dropdown selects */
 .form-control,
 .form-select {
-    border-radius: 10px;
-    padding: 10px;
-    transition: 0.3s;
+  border-radius: var(--radius-input);
+  padding: 11px 16px;
+  border: 1.5px solid #dbe2ea;
+  background-color: #ffffff;
+  color: var(--text-main);
+  font-weight: 500;
+  transition: var(--transition-base);
 }
 
+.form-control::placeholder {
+  color: #adb5bd;
+  font-weight: 400;
+}
+
+/* Dynamic Interaction Focus States */
 .form-control:focus,
 .form-select:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 8px rgba(13, 110, 253, 0.25);
+  border-color: var(--color-brand);
+  box-shadow: var(--shadow-input-focus);
+  background-color: #fff;
+  outline: 0;
 }
 
+/* Buttons */
 .btn {
-    border-radius: 10px;
-    font-weight: 600;
-    padding: 12px;
-    transition: 0.3s;
+  border-radius: var(--radius-input);
+  font-weight: 700;
+  padding: 14px 28px;
+  letter-spacing: 0.3px;
+  transition: var(--transition-base);
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
 }
 
 .btn-primary {
-    background: #0d6efd;
-    border: none;
+  background-color: var(--color-brand);
+  border: none;
 }
 
-.btn-primary:hover {
-    background: #0b5ed7;
-    transform: scale(1.02);
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--color-brand-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(13, 110, 253, 0.3);
 }
 
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+/* Separation Rules */
+hr {
+  margin: 32px 0;
+  border: 0;
+  border-top: 2px dashed #e2e8f0;
+  opacity: 1;
+}
+
+/* Alert Notification Boxes */
 .alert {
-    border-radius: 12px;
-    font-size: 18px;
-    font-weight: 600;
-    animation: fadeIn 0.5s ease-in-out;
+  border: none;
+  border-radius: var(--radius-input);
+  padding: 20px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
+.alert-success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.alert-danger {
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.alert-warning {
+  background-color: var(--color-warning-bg);
+  color: #856404;
+}
+
+/* Custom Text colors passed down into result blocks */
 .result-success {
-    color: #198754;
-    font-size: 20px;
-    font-weight: bold;
+  color: var(--color-success) !important;
+  font-weight: 700;
 }
 
 .result-failure {
-    color: #dc3545;
-    font-size: 20px;
-    font-weight: bold;
+  color: var(--color-danger) !important;
+  font-weight: 700;
 }
 
-hr {
-    margin: 30px 0;
-}
-
-/* Smooth fade-in for alerts */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
+/* ==========================================================================
+   Responsive Viewport Optimizations
+   ========================================================================== */
 @media (max-width: 768px) {
-    .card {
-        padding: 20px !important;
-    }
-    h2 {
-        font-size: 26px;
-    }
-    .btn {
-        width: 100%;
-        margin-top: 10px;
-    }
+  body {
+    align-items: flex-start;
+    padding: 16px 0;
+  }
+
+  .card {
+    border-radius: 16px;
+  }
+  
+  h2 {
+    font-size: 24px;
+  }
+
+  .btn {
+    width: 100%;
+  }
 }

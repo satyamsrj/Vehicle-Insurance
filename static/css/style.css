@@ -16,6 +16,7 @@ body {
     border: none;
     border-radius: 18px;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    padding: 30px;
 }
 
 h2 {
@@ -45,6 +46,7 @@ label {
     border-radius: 10px;
     font-weight: 600;
     padding: 12px;
+    transition: 0.3s;
 }
 
 .btn-primary {
@@ -54,45 +56,47 @@ label {
 
 .btn-primary:hover {
     background: #0b5ed7;
-}
-
-.btn-success {
-    border: none;
-}
-
-.btn-success:hover {
-    background: #157347;
+    transform: scale(1.02);
 }
 
 .alert {
     border-radius: 12px;
     font-size: 18px;
     font-weight: 600;
+    animation: fadeIn 0.5s ease-in-out;
 }
 
 .result-success {
     color: #198754;
+    font-size: 20px;
+    font-weight: bold;
 }
 
 .result-failure {
     color: #dc3545;
+    font-size: 20px;
+    font-weight: bold;
 }
 
 hr {
     margin: 30px 0;
 }
 
-@media (max-width: 768px) {
+/* Smooth fade-in for alerts */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
+@media (max-width: 768px) {
     .card {
         padding: 20px !important;
     }
-
     h2 {
-        font-size: 28px;
+        font-size: 26px;
     }
-
     .btn {
         width: 100%;
+        margin-top: 10px;
     }
 }

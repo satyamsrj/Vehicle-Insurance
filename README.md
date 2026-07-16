@@ -4,7 +4,7 @@ Welcome to this MLOps project, designed to demonstrate a robust pipeline for man
 
 ---
 
-## 📁 Project Setup and Structure
+# 📁 Project Setup and Structure
 
 ### Step 1: Project Template
 - Start by executing the `template.py` file to create the initial project template, which includes the required folder structure and placeholder files.
